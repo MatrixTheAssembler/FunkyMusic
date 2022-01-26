@@ -51,7 +51,7 @@ client.on("messageCreate", message => {
     const command = client.commands.get(commandName) || client.aliases.get(commandName);
 
     if (!command) {
-        message.channel.send("Type -help or -? to get help.");
+        message.channel.send(`Type ${client.prefix}help or ${client.prefix}? to get help.`);
         console.log(`Command ${commandName} could not be found.`);
         return;
     }

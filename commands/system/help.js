@@ -17,22 +17,29 @@ module.exports = {
             return;
         }
 
-        const commands = client.helps;
-        const systemCommands = commands.filter(command => command.help.startsWith("system/")).map(command => command.help.split("/").slice(1));
-        const musicCommands = commands.filter(command => command.help.startsWith("music/")).map(command => command.help.split("/").slice(1));
+        const helpMap = new Map();
+        const commands = client.commands.map(c => c).filter(c => c.help);
+        commands.forEach(command => {
+            const commandCategorie = command.help.split("/").shift();
+            const commandHelp = command.help.split("/").slice(1).shift();
 
-        let newMessage = "system:\n";
-        systemCommands.forEach(command => {
-            newMessage += `${command}, `;
+            if(!helpMap.has(commandCategorie)){
+                helpMap.set(commandCategorie, []);
+            }
+            helpMap.get(commandCategorie).push(commandHelp);
         });
-        newMessage = newMessage.slice(0, -2);
-        newMessage += "\n";
 
-        newMessage += "music:\n";
-        musicCommands.forEach(command => {
-            newMessage += `${command}, `;
+
+        let newMessage = "";
+
+        helpMap.forEach((helps, commandCategorie) => {
+            newMessage += commandCategorie + ":\n";
+            helps.forEach(help => newMessage += help + ", ");
+            newMessage = newMessage.slice(0, -2);
+            newMessage += "\n\n";
         });
-        newMessage = newMessage.slice(0, -2);
+
+        newMessage = newMessage.trim();
 
         message.channel.send(newMessage);
         console.log("help");
