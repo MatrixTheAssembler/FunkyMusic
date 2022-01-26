@@ -13,7 +13,6 @@ const channelTypeText = "GUILD_TEXT";
 
 
 client.commands = new Collection();
-client.helps = new Collection();
 client.aliases = new Collection();
 const commmandFiles = getAllFiles("./commands").filter(file => file.endsWith(".js"));
 
@@ -21,10 +20,6 @@ commmandFiles.forEach(file => {
     const command = require(file);
 
     client.commands.set(command.name, command);
-
-    if (command.help) {
-        client.helps.set(command.help, command);
-    }
 
     if (command.aliases) {
         command.aliases.forEach(alias => {
