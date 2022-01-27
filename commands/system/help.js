@@ -1,7 +1,9 @@
+const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+
 module.exports = {
     name: "help",
     description: "Shows all commands or description of one command.",
-    help: "help [command]",
+    help: `${directory}/help [command]`,
     aliases: ["?", "h"],
     execute(client, message, args){
         if(args.length){

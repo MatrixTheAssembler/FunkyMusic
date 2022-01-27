@@ -1,6 +1,8 @@
+const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+
 module.exports = {
     name: "clean",
-    help: "system/clean",
+    help: `${directory}/clean`,
     description: "Cleans the channel from old bot messages and old commands.",
     aliases: ["purge", "clear", "c"],
     execute(client, message, args) {

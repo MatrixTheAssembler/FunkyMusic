@@ -1,6 +1,8 @@
+const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+
 module.exports = {
     name: "alias",
-    help: "system/alias <command>",
+    help: `${directory}/alias <command>`,
     description: "alias page",
     execute(client, message, args){
         if(!args.length){

@@ -1,6 +1,8 @@
+const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+
 module.exports = {
     name: "shuffle",
-    help: "music/shuffle",
+    help: `${directory}/shuffle`,
     description: "Shuffles audio in queue.",
     execute(client, message, args) {
         const { voice } = message.member;

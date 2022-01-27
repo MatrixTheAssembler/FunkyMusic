@@ -1,6 +1,8 @@
+const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+
 module.exports = {
     name: "pause",
-    help: "music/pause",
+    help: `${directory}/pause`,
     description: "Pauses audio in queue.",
     execute(client, message, args) {
         const { voice } = message.member;

@@ -1,6 +1,8 @@
+const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+
 module.exports = {
     name: "clearq",
-    help: "music/clearq",
+    help: `${directory}/clearq`,
     description: "Clears audio in queue.",
     execute(client, message, args) {
         const { voice } = message.member;

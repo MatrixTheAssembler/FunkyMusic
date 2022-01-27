@@ -1,7 +1,9 @@
+const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+
 module.exports = {
     name: "play",
-    help: "music/play [URL|search term]",
-    description: "Plays audio from YouTube, Spotify and co.",
+    help: `${directory}/play [URL | search term]`,
+    description: "Plays audio from YouTube, Spotify and co and resumes audio, if paused and no argument is given.",
     execute(client, message, args) {
         const { voice } = message.member;
         const guildAudioQueue = client.player.getQueue(message.guild.id);

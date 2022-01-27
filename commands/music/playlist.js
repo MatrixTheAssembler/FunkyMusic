@@ -1,6 +1,8 @@
+const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+
 module.exports = {
     name: "playlist",
-    help: "music/playlist <URL|search term>",
+    help: `${directory}/playlist <URL | search term>`,
     description: "Adds audio from YouTube, Spotify and co to playlist.",
     execute(client, message, args) {
         const { voice } = message.member;
