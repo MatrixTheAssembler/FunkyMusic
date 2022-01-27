@@ -8,8 +8,8 @@ module.exports = {
     execute(client, message, args) {
         message.channel.messages.fetch({ limit: 50 })
             .then(resp => {
-                messages = resp;
-                messages = messages.filter(message => message.author.bot || message.content.startsWith(client.prefix));
+                let messages = resp;
+                messages = messages.filter(m => m.author.username === client.botName || m.content.startsWith(client.prefix));
                 message.channel.bulkDelete(messages, true);
 
                 console.log(`Cleaned ${messages.size} messages.`);

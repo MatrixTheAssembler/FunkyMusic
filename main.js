@@ -7,6 +7,7 @@ const { Player } = require("discord-music-player");
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
 
+client.botName = "Funky Music";
 client.prefix = "+";
 
 const channelTypeText = "GUILD_TEXT";
