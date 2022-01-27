@@ -1,7 +1,7 @@
 module.exports = {
     name: "clean",
     help: "system/clean",
-    description: "Cleans the channel from old bot messages.",
+    description: "Cleans the channel from old bot messages and old commands.",
     aliases: ["purge", "clear", "c"],
     execute(client, message, args) {
         message.channel.messages.fetch({ limit: 50 })

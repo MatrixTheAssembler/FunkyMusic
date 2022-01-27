@@ -1,18 +1,26 @@
 module.exports = {
     name: "help",
-    description: "help page",
+    description: "Shows all commands or description of one command.",
+    help: "help [command]",
     aliases: ["?", "h"],
     execute(client, message, args){
         if(args.length){
-            const command = client.commands.get(args[0]);
+            const name = client.commands.get(args[0]);
+            const alias = client.aliases.get(args[0]);
             
-            if(!command){
+            if(!(name || alias)){
                 message.channel.send(`${args[0]} is not a command`)
                 console.log(`help ${args[0]} is not a command`)
                 return;
             }
 
-            message.channel.send(command.description);
+            const command = name || alias;
+
+            const aliases = [...new Set([...[command.name], ...command.aliases])].sort().join(", ");
+
+            const newMessage = `description: ${command.description}\naliases: ${aliases}`;
+
+            message.channel.send(newMessage);
             console.log(`help ${command.name}`);
             return;
         }
@@ -39,7 +47,7 @@ module.exports = {
             newMessage += "\n\n";
         });
 
-        newMessage = newMessage.trim();
+        newMessage += "<...> = arguments are a must\n[...] = arguments are optional\n| = or";
 
         message.channel.send(newMessage);
         console.log("help");
