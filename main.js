@@ -30,7 +30,7 @@ commmandFiles.forEach(file => {
 });
 
 // other variables
-client.player = new Player(client, {leaveOnEnd: false});
+client.player = new Player(client, {timeout: 10 * 60 * 1000});
 setPlayerListeners(client);
 
 
