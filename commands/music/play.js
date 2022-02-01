@@ -4,6 +4,7 @@ module.exports = {
     name: "play",
     help: `${directory}/play [URL | search term]`,
     description: "Plays audio from YouTube, Spotify and co and resumes audio, if paused and no argument is given.",
+    aliases: ["p", "resume"],
     execute(client, message, args) {
         const { voice } = message.member;
         const guildAudioQueue = client.player.getQueue(message.guild.id);

@@ -4,6 +4,7 @@ module.exports = {
     name: "stop",
     help: `${directory}/stop`,
     description: "Stops audio.",
+    aliases: ["end"],
     execute(client, message, args) {
         const { voice } = message.member;
         const guildAudioQueue = client.player.getQueue(message.guild.id);
