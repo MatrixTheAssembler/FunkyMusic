@@ -4,6 +4,7 @@ module.exports = {
     name: "getq",
     help: `${directory}/getq`,
     description: "Lists audio in queue.",
+    aliases: ["list"],
     execute(client, message, args) {
         const { voice } = message.member;
         const guildAudioQueue = client.player.getQueue(message.guild.id);

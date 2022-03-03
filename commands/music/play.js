@@ -42,8 +42,12 @@ module.exports = {
         const queue = client.player.createQueue(message.guild.id);
         queue.setData({initMessage: message});
         queue.join(voice.channel).then(() => {
-            queue.play(args.join(" "), {timecode: true});
-            console.log("Play " + args.join(" "));
+            try {
+                console.log("Play " + args.join(" "));
+                queue.play(args.join(" "), {timecode: true});
+            } catch (err) {
+                console.log("Error at play:\n" + err);
+            }
         }).catch(err => {
             if (!guildAudioQueue)
                 queue.stop();
