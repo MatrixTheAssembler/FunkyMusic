@@ -46,6 +46,7 @@ module.exports = {
                 console.log("Play " + args.join(" "));
                 queue.play(args.join(" "), {timecode: true});
             } catch (err) {
+                message.channel.send("Song not found.");
                 console.log("Error at play:\n" + err);
             }
         }).catch(err => {
