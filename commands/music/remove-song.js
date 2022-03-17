@@ -4,6 +4,7 @@ module.exports = {
     name: "removesong",
     help: `${directory}/removesong <song ID>`,
     description: "Removes audio from queue.",
+    aliases: ["r", "remove"],
     execute(client, message, args) {
         const { voice } = message.member;
         const guildAudioQueue = client.player.getQueue(message.guild.id);
@@ -37,7 +38,17 @@ module.exports = {
             return;
         }
 
-        guildAudioQueue.remove(parseInt(args[0]) - 1);
+        const songId = parseInt(args[0]);
+        if (songId < 1 || songId > guildAudioQueue.songs.length - 1) {
+            message.channel.send("ID not available");
+            console.log("Remove Index out of bounds");
+            return;
+        }
+
+        const song = guildAudioQueue.songs[songId];
+        guildAudioQueue.remove(songId);
+        
+        message.channel.send("Removed " + song.name + " | " + song.author)
 
         console.log("Remove Song");
     }

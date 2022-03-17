@@ -26,15 +26,16 @@ module.exports = {
             return;
         }
 
-        if(!guildAudioQueue){
+        console.log(guildAudioQueue.songs.length);
+        if(!guildAudioQueue || guildAudioQueue.songs.length <= 1){
             message.channel.send("No song in Queue.");
             console.log("No song in Queue.");
             return;
         }
 
-        let newMessage = "";
-        for(let i = 0; i < guildAudioQueue.songs.length; i++){
-            newMessage += i+1 + ": " + guildAudioQueue.songs[i] + "\n";
+        let newMessage = "🖕";
+        for(let i = 1; i < guildAudioQueue.songs.length; i++){
+            newMessage += i + ": " + guildAudioQueue.songs[i] + "\n";
         }
 
         message.channel.send(newMessage);

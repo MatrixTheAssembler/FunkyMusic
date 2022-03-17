@@ -4,6 +4,7 @@ module.exports = {
     name: "nowplaying",
     help: `${directory}/nowplaying`,
     description: "Shows currently playing audio.",
+    aliases: ["now"],
     execute(client, message, args) {
         const { voice } = message.member;
         const guildAudioQueue = client.player.getQueue(message.guild.id);
