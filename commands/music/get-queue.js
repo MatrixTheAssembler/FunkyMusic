@@ -33,7 +33,7 @@ module.exports = {
             return;
         }
 
-        let newMessage = "🖕";
+        let newMessage = "";
         for(let i = 1; i < guildAudioQueue.songs.length; i++){
             newMessage += i + ": " + guildAudioQueue.songs[i] + "\n";
         }
