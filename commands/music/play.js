@@ -39,11 +39,16 @@ module.exports = {
             return;
         }
 
+        var searchTerm = args.join(" ");
+        if(searchTerm.includes("youtube.com")){
+            searchTerm = searchTerm.slice(0, searchTerm.indexOf("&"));
+        }
+
         const queue = client.player.createQueue(message.guild.id);
         queue.setData({initMessage: message});
         queue.join(voice.channel).then(() => {
-            console.log("Play " + args.join(" "));
-            queue.play(args.join(" "), {timecode: true});
+            console.log("Play " + searchTerm);
+            queue.play(searchTerm, {timecode: true});
         }).catch(err => {
             if (!guildAudioQueue)
                 queue.stop();
