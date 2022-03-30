@@ -40,9 +40,7 @@ module.exports = {
         }
 
         var searchTerm = args.join(" ");
-        if(searchTerm.includes("youtube.com")){
-            searchTerm = searchTerm.slice(0, searchTerm.indexOf("&"));
-        }
+        searchTerm = searchTerm.replace("music.youtube.com", "youtube.com");
 
         const queue = client.player.createQueue(message.guild.id);
         queue.setData({initMessage: message});
