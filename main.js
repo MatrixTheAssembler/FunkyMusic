@@ -30,7 +30,7 @@ commmandFiles.forEach(file => {
 });
 
 // other variables
-client.player = new Player(client, {timeout: 10 * 60 * 1000});
+client.player = new Player(client, { timeout: 10 * 60 * 1000 });
 setPlayerListeners(client);
 
 
@@ -88,8 +88,14 @@ function setPlayerListeners(client) {
         // Emitted when a song was added to the queue.
         .on('songAdd', (queue, song) => {
             const message = `${song} was added to the queue.`;
-            queue.data.initMessage.channel.send(message);
-            console.log(message);
+            if (song.title.includes("Heat Waves")) {
+                queue.remove(song);
+                queue.data.initMessage.channel.send(message + " Song was removed.");
+                console.log(message + " Song was removed.");
+            } else {
+                queue.data.initMessage.channel.send(message);
+                console.log(message);
+            }
         })
         // Emitted when a playlist was added to the queue.
         .on('playlistAdd', (queue, playlist) => {
