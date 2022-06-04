@@ -10,8 +10,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 client.botName = "Funky Music";
 client.prefix = "+";
 
-const channelTypeText = "GUILD_TEXT";
-
+const forbiddenSongs = JSON.parse(fs.readFileSync("./forbidden-songs.json", "utf8")).forbiddenSongs;
 
 client.commands = new Collection();
 client.aliases = new Collection();
@@ -87,19 +86,13 @@ function setPlayerListeners(client) {
         })
         // Emitted when a song was added to the queue.
         .on('songAdd', (queue, song) => {
-            const message = `${song} was added to the queue.`;
-            if (song.title.includes("Heat Waves")) {
-                queue.remove(song);
-                queue.data.initMessage.channel.send(message + " Song was removed.");
-                console.log(message + " Song was removed.");
-            } else {
-                queue.data.initMessage.channel.send(message);
-                console.log(message);
-            }
+            const message = `Added to queue: ${song}`;
+            queue.data.initMessage.channel.send(message);
+            console.log(message);
         })
         // Emitted when a playlist was added to the queue.
         .on('playlistAdd', (queue, playlist) => {
-            const message = `Playlist ${playlist} with ${playlist.songs.length} songs was added to the queue.`;
+            const message = `Playlist of length ${playlist.songs.length} was added to queue: ${playlist}`;
             queue.data.initMessage.channel.send(message);
             console.log(message);
         })
@@ -111,15 +104,31 @@ function setPlayerListeners(client) {
             console.log(`The queue has ended.`))
         // Emitted when a song changed.
         .on('songChanged', (queue, newSong, oldSong) => {
-            const message = `${newSong} is now playing.`;
-            queue.data.initMessage.channel.send(message);
-            console.log(message);
+            if (isSongInForbiddenSongs(newSong)) {
+                const message = `Skipped: ${newSong}`;
+                console.log(queue);
+                queue.stop();
+                queue.data.initMessage.channel.send(message);
+                console.log(message);
+            } else {
+                const message = `Playing: ${newSong}`;
+                queue.data.initMessage.channel.send(message);
+                console.log(message);
+            }
         })
         // Emitted when a first song in the queue started playing.
         .on('songFirst', (queue, song) => {
-            const message = `Started playing ${song}.`;
-            queue.data.initMessage.channel.send(message);
-            console.log(message);
+            if (isSongInForbiddenSongs(song)) {
+                const message = `Skipped: ${song}`;
+                console.log(queue);
+                queue.skip();
+                queue.data.initMessage.channel.send(message);
+                console.log(message);
+            } else {
+                const message = `Started playing: ${song}`;
+                queue.data.initMessage.channel.send(message);
+                console.log(message);
+            }
         })
         // Emitted when someone disconnected the bot from the channel.
         .on('clientDisconnect', (queue) =>
@@ -134,6 +143,11 @@ function setPlayerListeners(client) {
 }
 
 
-function firstTextChannel(guild) {
-    return guild.channels.cache.find(channel => channel.type === channelTypeText);
+function isSongInForbiddenSongs(song) {
+    for (let i = 0; i < forbiddenSongs.length; i++) {
+        if (song.name.toLowerCase().includes(forbiddenSongs[i].toLowerCase())) {
+            return true;
+        }
+    }
+    return false;
 }
