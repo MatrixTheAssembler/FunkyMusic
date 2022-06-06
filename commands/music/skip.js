@@ -25,7 +25,7 @@ module.exports = {
             return;
         }
         
-        if(!guildAudioQueue){
+        if(!guildAudioQueue || !guildAudioQueue.songs.length){
             message.channel.send("No song in Queue.");
             console.log("No song in Queue.");
             return;

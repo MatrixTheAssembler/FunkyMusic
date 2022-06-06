@@ -26,7 +26,6 @@ module.exports = {
             return;
         }
 
-        console.log(guildAudioQueue.songs.length);
         if(!guildAudioQueue || guildAudioQueue.songs.length <= 1){
             message.channel.send("No song in Queue.");
             console.log("No song in Queue.");
@@ -36,10 +35,17 @@ module.exports = {
         let newMessage = "";
         for(let i = 1; i < guildAudioQueue.songs.length; i++){
             newMessage += i + ": " + guildAudioQueue.songs[i] + "\n";
+
+            if(newMessage.length > 1500){
+                message.channel.send(newMessage);
+                newMessage = "";
+            }
         }
 
-        message.channel.send(newMessage);
+        if(newMessage.length > 0){
+            message.channel.send(newMessage);
+        }
 
-        console.log("Get Queue");
+        console.log("Get Queue " + guildAudioQueue.songs.length);
     }
 }

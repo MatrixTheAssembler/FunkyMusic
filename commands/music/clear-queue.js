@@ -33,6 +33,7 @@ module.exports = {
 
         guildAudioQueue.clearQueue();
 
-        console.log("clear queue");
+        console.log("Clear");
+        message.channel.send("Cleared Queue");
     }
 }

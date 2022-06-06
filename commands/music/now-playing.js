@@ -21,7 +21,7 @@ module.exports = {
             return;
         }
 
-        message.channel.send(`Now playing: ${guildAudioQueue.nowPlaying}`);
+        message.channel.send(`Now playing: ${guildAudioQueue.nowPlaying}\nTime: ${guildAudioQueue.createProgressBar().times}`);
 
         console.log("Now Playing");
     }

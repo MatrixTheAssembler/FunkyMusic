@@ -1,4 +1,6 @@
-const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+const { Utils } = require("discord-music-player");
+
+const directory = __dirname.slice(__dirname.lastIndexOf('/') + 1);
 
 module.exports = {
     name: "playlist",
@@ -31,15 +33,24 @@ module.exports = {
             return;
         }
 
-        const queue = client.player.createQueue(message.guild.id);
-        queue.setData({initMessage: message});
-        queue.join(voice.channel).then(() => queue.play(args.join(" ")))
-            .catch(err => {
-                if (!guildAudioQueue)
-                    queue.stop();
-                console.log("Error at playlist:\n" + err);
-            });
+        var searchTerm = args.join(" ");
+        searchTerm = searchTerm.replace("music.youtube.com", "youtube.com");
+        searchTerm = searchTerm.replace("&feature=share", "");
 
-        console.log("Playlist " + args.join(" "));
+        console.log("Playlist " + searchTerm);
+
+        const queue = client.player.createQueue(message.guild.id);
+        queue.setData({ initMessage: message });
+        queue.join(voice.channel).then(() => {
+            Utils.playlist(searchTerm, {}, queue).then(playlist => {
+                playlist.songs = playlist.songs.filter(song => !client.isSongInForbiddenSongs(song));
+                queue.playlist(playlist);
+
+            }).catch(err => console.log("Error at playlist 1:\n" + err));
+        }).catch(err => {
+            if (!guildAudioQueue)
+                queue.stop();
+            console.log("Error at playlist 2:\n" + err);
+        });
     }
 }

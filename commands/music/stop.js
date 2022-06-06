@@ -26,14 +26,18 @@ module.exports = {
             return;
         }
 
-        if(!guildAudioQueue){
+        if(!guildAudioQueue || !guildAudioQueue.songs.length){
             message.channel.send("No song in Queue.");
             console.log("No song in Queue.");
             return;
         }
 
-        guildAudioQueue.stop();
+        guildAudioQueue.clearQueue();
+        guildAudioQueue.skip();
+        // stop function of package has bug, so we need to use this workaround
+        // guildAudioQueue.stop();
 
         console.log("Stop");
+        message.channel.send("Stopped Queue");
     }
 }

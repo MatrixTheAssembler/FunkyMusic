@@ -1,4 +1,6 @@
-const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+const { Utils } = require("discord-music-player");
+
+const directory = __dirname.slice(__dirname.lastIndexOf('/') + 1);
 
 module.exports = {
     name: "play",
@@ -28,7 +30,7 @@ module.exports = {
         }
 
         if (!args.length) {
-            if (!guildAudioQueue) {
+            if (!guildAudioQueue || !guildAudioQueue.songs.length) {
                 message.channel.send("No song in Queue.");
                 console.log("No song in Queue.");
                 return;
@@ -36,24 +38,32 @@ module.exports = {
 
             guildAudioQueue.setPaused(false);
             console.log("Resume");
+            message.channel.send("Resumed Queue");
             return;
         }
 
         var searchTerm = args.join(" ");
         searchTerm = searchTerm.replace("music.youtube.com", "youtube.com");
-        if(searchTerm.includes("youtube.com") && searchTerm.includes("list=")){
-            searchTerm = searchTerm.slice(0, searchTerm.indexOf("&"));
-        }
+
+        console.log("Play " + searchTerm);
 
         const queue = client.player.createQueue(message.guild.id);
-        queue.setData({initMessage: message});
+        queue.setData({ initMessage: message });
         queue.join(voice.channel).then(() => {
-            console.log("Play " + searchTerm);
-            queue.play(searchTerm, {timecode: true});
+            Utils.best(searchTerm, { timecode: true }, queue).then(song => {
+                if (client.isSongInForbiddenSongs(song)) {
+                    console.log("Song is in forbidden songs.");
+                    message.channel.send("This song is not allowed.");
+                    return;
+                }
+
+                queue.play(song.url, { timecode: true });
+
+            }).catch(err => console.log(`Error at play 1: ${err}`));
         }).catch(err => {
             if (!guildAudioQueue)
                 queue.stop();
-            console.log("Error at play:\n" + err);
+            console.log("Error at play 2:\n" + err);
         });
     }
 }

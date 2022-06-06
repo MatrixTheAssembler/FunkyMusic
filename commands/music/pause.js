@@ -34,5 +34,6 @@ module.exports = {
         guildAudioQueue.setPaused(true);
 
         console.log("Pause");
+        message.channel.send("Paused Queue");
     }
 }

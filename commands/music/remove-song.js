@@ -48,8 +48,7 @@ module.exports = {
         const song = guildAudioQueue.songs[songId];
         guildAudioQueue.remove(songId);
         
-        message.channel.send("Removed " + song.name + " | " + song.author)
-
-        console.log("Remove Song");
+        console.log(`Removed ${song}`);
+        message.channel.send(`Removed ${song}`);
     }
 }
