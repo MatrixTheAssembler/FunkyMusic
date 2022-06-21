@@ -11,7 +11,9 @@ module.exports = {
             return;
         }
 
-        const command = client.commands.get(args[0]) || client.aliases.get(args[0]);
+        const commandName = args[0];
+
+        const command = client.commands.get(commandName) || client.aliases.get(commandName);
         if(!command){
             message.channel.send(`Command ${commandName} could not be found.`)
             console.log(`Command ${commandName} could not be found.`);
@@ -21,12 +23,12 @@ module.exports = {
         const aliases = [...new Set([...[command.name], ...command.aliases])].sort();
         
         if(!aliases){
-            message.channel.send(`No aliases for ${args[0]} found`);
-            console.log(`No aliases for ${args[0]} found`);
+            message.channel.send(`No aliases for ${commandName} found`);
+            console.log(`No aliases for ${commandName} found`);
             return;
         }
 
-        const newMessage = `aliases of ${args[0]}: `;
+        let newMessage = `aliases of ${commandName}: `;
         aliases.sort().forEach(alias => {
             newMessage += `${alias}, `;
         });
