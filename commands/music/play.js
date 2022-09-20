@@ -45,6 +45,10 @@ module.exports = {
         var searchTerm = args.join(" ");
         searchTerm = searchTerm.replace("music.youtube.com", "youtube.com");
 
+        if(searchTerm.includes("spotify")){
+            searchTerm = searchTerm.replace("open.", "");
+        }
+
         console.log("Play " + searchTerm);
 
         const queue = client.player.createQueue(message.guild.id);
