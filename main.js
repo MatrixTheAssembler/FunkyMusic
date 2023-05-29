@@ -1,62 +1,78 @@
 require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
-const { Collection, Intents, Client } = require("discord.js");
 const { Player } = require("discord-music-player");
+const { Client, Events, GatewayIntentBits, Collection } = require("discord.js");
 
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildVoiceStates
+    ]
+});
 
-client.botName = "Funky Music";
-client.prefix = "+";
-
+//////////////////////////////////////////////////////////////////////////////////
 client.commands = new Collection();
-client.aliases = new Collection();
-const commmandFiles = getAllFiles("./commands").filter(file => file.endsWith(".js"));
+client.player = new Player(client, { timeout: 10 * 60 * 1000, leaveOnEmpty: true });
+client.forbiddenSongs = [];
+//////////////////////////////////////////////////////////////////////////////////
 
-commmandFiles.forEach(file => {
+const commandFiles = getAllFiles("./commands").filter(file => file.endsWith(".js"));
+
+commandFiles.forEach(file => {
     const command = require(file);
 
-    client.commands.set(command.name, command);
-
-    if (command.aliases) {
-        command.aliases.forEach(alias => {
-            client.aliases.set(alias, command)
-        })
+    if ("data" in command && "execute" in command) {
+        client.commands.set(command.data.name, command);
+    } else {
+        console.error(`Command ${file} is missing data or execute`);
     }
 });
 
-// other variables
+
 const forbiddenSongs = JSON.parse(fs.readFileSync("./forbidden-songs.json", "utf8")).forbiddenSongs;
 client.forbiddenSongs = forbiddenSongs;
-client.player = new Player(client, { timeout: 10 * 60 * 1000 });
+
+
 setPlayerListeners(client);
 
 
-client.once("ready", () => {
-    console.log("Funky Music Bot is online!");
+client.on(Events.InteractionCreate, async interaction => {
+    let component = null;
+
+    if (interaction.isChatInputCommand()) {
+        const command = client.commands.get(interaction.commandName);
+
+        if (!command) {
+            console.error(`Command ${interaction.commandName} is not registered`);
+            return;
+        }
+
+        component = command;
+    }
+
+    if (component) {
+        try {
+            component.execute(interaction);
+        } catch (error) {
+            console.error(error);
+            if (interaction.replied || interaction.deferred) {
+                interaction.followUp("Beim Ausführen ist ein Fehler aufgetreten!");
+            } else {
+                interaction.reply("Beim Ausführen ist ein Fehler aufgetreten!");
+            }
+        }
+    }
 });
 
 
-client.on("messageCreate", message => {
-    if (!message.content.startsWith(client.prefix) || message.author.bot || !message.guild) return;
-
-    const args = message.content.slice(client.prefix.length).split(/ +/);
-    const commandName = args.shift().toLowerCase();
-    const command = client.commands.get(commandName) || client.aliases.get(commandName);
-
-    if (!command) {
-        message.channel.send(`Type ${client.prefix}help or ${client.prefix}? to get help.`);
-        console.log(`Command ${commandName} could not be found.`);
-        return;
-    }
-
-    command.execute(client, message, args);
+client.once(Events.ClientReady, () => {
+    console.log("Funky Penguin Bot is ready!");
 });
 
 client.login(process.env.BOT_TOKEN);
-
-
 
 
 function getAllFiles(dirPath, arrayOfFiles) {

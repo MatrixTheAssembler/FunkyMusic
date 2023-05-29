@@ -1,28 +1,28 @@
-const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+const { SlashCommandBuilder } = require("discord.js");
+
 
 module.exports = {
-    name: "nowplaying",
-    help: `${directory}/nowplaying`,
-    description: "Shows currently playing audio.",
-    aliases: ["now"],
-    execute(client, message, args) {
-        const { voice } = message.member;
-        const guildAudioQueue = client.player.getQueue(message.guild.id);
+    data: new SlashCommandBuilder()
+        .setName("now-playing")
+        .setDescription("Zeigt den aktuellen Song an."),
+
+    async execute(interaction) {
+        const { voice } = interaction.member;
+        const guildAudioQueue = interaction.client.player.getQueue(interaction.guild.id);
 
         if (!voice.channel) {
-            message.channel.send("You must be in a voice channel.");
-            console.log("You must be in a voice channel.");
+            interaction.reply("Du musst in einem Sprachkanal sein.", { ephemeral: true });
+            console.log("Not in voice channel.");
             return;
         }
 
-        if(!guildAudioQueue){
-            message.channel.send("No song in Queue.");
+        if (!guildAudioQueue || !guildAudioQueue.songs.length) {
+            interaction.reply("Kein Song in der Warteschlange.");
             console.log("No song in Queue.");
             return;
         }
 
-        message.channel.send(`Now playing: ${guildAudioQueue.nowPlaying}\nTime: ${guildAudioQueue.createProgressBar().times}`);
-
+        interaction.reply(`Now playing: ${guildAudioQueue.nowPlaying}\nTime: ${guildAudioQueue.createProgressBar().times}`);
         console.log("Now Playing");
     }
 }

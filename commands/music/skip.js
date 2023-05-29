@@ -1,38 +1,30 @@
-const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+const { SlashCommandBuilder } = require("discord.js");
+
 
 module.exports = {
-    name: "skip",
-    help: `${directory}/skip`,
-    description: "Skips audio in queue.",
-    execute(client, message, args) {
-        const { voice } = message.member;
-        const guildAudioQueue = client.player.getQueue(message.guild.id);
+    data: new SlashCommandBuilder()
+        .setName("skip")
+        .setDescription("Springt zum nächsten Song in der Warteschlange."),
 
-        const guildRoles = message.guild.roles.cache;
-        const memberRoles = message.member._roles;
-        const guildMemberRoles = guildRoles
-            .filter(role => memberRoles.includes(role.id))
-            .map(role => role.name.toLowerCase());
-        if (!guildMemberRoles.includes("dj")) {
-            message.channel.send("You need the DJ role to manipulate music.");
-            console.log("Not DJ role.");
-            return;
-        }
+    async execute(interaction) {
+        const { voice } = interaction.member;
+        const guildAudioQueue = interaction.client.player.getQueue(interaction.guild.id);
 
         if (!voice.channel) {
-            message.channel.send("You must be in a voice channel.");
-            console.log("You must be in a voice channel.");
+            interaction.reply("Du musst in einem Sprachkanal sein.", { ephemeral: true });
+            console.log("Not in voice channel.");
             return;
         }
-        
-        if(!guildAudioQueue || !guildAudioQueue.songs.length){
-            message.channel.send("No song in Queue.");
+
+        if (!guildAudioQueue || !guildAudioQueue.songs.length) {
+            interaction.reply("Kein Song in der Warteschlange.");
             console.log("No song in Queue.");
             return;
         }
 
         guildAudioQueue.skip();
 
+        interaction.reply("Springe zum nächsten Song.");
         console.log("Skip");
     }
 }

@@ -1,47 +1,33 @@
-const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+const { Utils } = require("discord-music-player");
+const { SlashCommandBuilder } = require("discord.js");
+
 
 module.exports = {
-    name: "removesong",
-    help: `${directory}/removesong <song ID>`,
-    description: "Removes audio from queue.",
-    aliases: ["r", "remove"],
-    execute(client, message, args) {
-        const { voice } = message.member;
-        const guildAudioQueue = client.player.getQueue(message.guild.id);
+    data: new SlashCommandBuilder()
+        .setName("remove-song")
+        .setDescription("Entfernt einen Song aus der Warteschlange.")
+        .addIntegerOption(option => option.setName("song-id").setDescription("Die ID des Songs.").setRequired(true)),
 
-        const guildRoles = message.guild.roles.cache;
-        const memberRoles = message.member._roles;
-        const guildMemberRoles = guildRoles
-            .filter(role => memberRoles.includes(role.id))
-            .map(role => role.name.toLowerCase());
-        if (!guildMemberRoles.includes("dj")) {
-            message.channel.send("You need the DJ role to manipulate music.");
-            console.log("Not DJ role.");
-            return;
-        }
+    async execute(interaction) {
+        const { voice } = interaction.member;
+        const guildAudioQueue = interaction.client.player.getQueue(interaction.guild.id);
 
         if (!voice.channel) {
-            message.channel.send("You must be in a voice channel.");
-            console.log("You must be in a voice channel.");
+            interaction.reply("Du musst in einem Sprachkanal sein.", { ephemeral: true });
+            console.log("Not in voice channel.");
             return;
         }
 
-        if (!args.length) {
-            message.channel.send("Remove what? -removeSong <song ID>");
-            console.log("Remove what?");
-            return;
-        }
-
-        if(!guildAudioQueue){
-            message.channel.send("No song in Queue.");
+        if (!guildAudioQueue || !guildAudioQueue.songs.length) {
+            interaction.reply("Kein Song in der Warteschlange.");
             console.log("No song in Queue.");
             return;
         }
 
-        const songId = parseInt(args[0]);
+        const songId = interaction.options.getInteger("song-id");
         if (songId < 1 || songId > guildAudioQueue.songs.length - 1) {
-            message.channel.send("ID not available");
-            console.log("Remove Index out of bounds");
+            interaction.reply("ID nicht verfügbar.");
+            console.log("Remove song, strange index");
             return;
         }
 
@@ -49,6 +35,6 @@ module.exports = {
         guildAudioQueue.remove(songId);
         
         console.log(`Removed ${song}`);
-        message.channel.send(`Removed ${song}`);
+        interaction.reply(`Removed ${song}`);
     }
 }

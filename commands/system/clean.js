@@ -1,16 +1,20 @@
-const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+const { SlashCommandBuilder } = require("discord.js");
+
 
 module.exports = {
-    name: "clean",
-    help: `${directory}/clean`,
-    description: "Cleans the channel from old bot messages and old commands.",
-    aliases: ["purge", "clear", "c"],
-    execute(client, message, args) {
-        message.channel.messages.fetch({ limit: 50 })
+    data: new SlashCommandBuilder()
+        .setName("clean")
+        .setDescription("Löscht alle Bot-Nachrichten."),
+        
+    async execute(interaction) {
+        interaction.deferReply();
+        interaction.deleteReply();
+
+        interaction.channel.messages.fetch({ limit: 50 })
             .then(resp => {
                 let messages = resp;
-                messages = messages.filter(m => m.author.username === client.botName || m.content.startsWith(client.prefix));
-                message.channel.bulkDelete(messages, true);
+                messages = messages.filter(message => message.author.username === interaction.client.user.username || message.content.startsWith(interaction.client.prefix));
+                interaction.channel.bulkDelete(messages, true);
 
                 console.log(`Cleaned ${messages.size} messages.`);
             })

@@ -1,48 +1,41 @@
+const { SlashCommandBuilder } = require("discord.js");
 const { Utils } = require("discord-music-player");
 
-const directory = __dirname.slice(__dirname.lastIndexOf('/') + 1);
 
 module.exports = {
-    name: "play",
-    help: `${directory}/play [URL | search term]`,
-    description: "Plays audio from YouTube, Spotify and co and resumes audio, if paused and no argument is given.",
-    aliases: ["p", "resume"],
-    execute(client, message, args) {
-        const { voice } = message.member;
-        const guildAudioQueue = client.player.getQueue(message.guild.id);
+    data: new SlashCommandBuilder()
+        .setName("play")
+        .setDescription("Spielt Musik von YouTube und Spotify oder setzt die Wiedergabe fort.")
+        .addStringOption(option => option.setName("song").setDescription("Der Song, der abgespielt werden soll.")),
 
-        const guildRoles = message.guild.roles.cache;
-        const memberRoles = message.member._roles;
-        const guildMemberRoles = guildRoles
-            .filter(role => memberRoles.includes(role.id))
-            .map(role => role.name.toLowerCase());
-        if (!guildMemberRoles.includes("dj")) {
-            message.channel.send("You need the DJ role to manipulate music.");
-            console.log("Not DJ role.");
-            return;
-        }
+    async execute(interaction) {
+        const { voice } = interaction.member;
+        const guildAudioQueue = interaction.client.player.getQueue(interaction.guild.id);
 
+        const song = interaction.options.getString("song");
 
         if (!voice.channel) {
-            message.channel.send("You must be in a voice channel.");
+            interaction.reply("Du musst in einem Sprachkanal sein.", { ephemeral: true });
             console.log("Not in voice channel.");
             return;
         }
 
-        if (!args.length) {
+        if(!song){
             if (!guildAudioQueue || !guildAudioQueue.songs.length) {
-                message.channel.send("No song in Queue.");
+                interaction.reply("Kein Song in der Warteschlange.");
                 console.log("No song in Queue.");
                 return;
             }
 
             guildAudioQueue.setPaused(false);
+            interaction.reply("Wiedergabe fortgesetzt.");
             console.log("Resume");
-            message.channel.send("Resumed Queue");
             return;
         }
 
-        var searchTerm = args.join(" ");
+        interaction.deferReply();
+
+        let searchTerm = song;
         searchTerm = searchTerm.replace("music.youtube.com", "youtube.com");
 
         if(searchTerm.includes("spotify")){
@@ -51,18 +44,19 @@ module.exports = {
 
         console.log("Play " + searchTerm);
 
-        const queue = client.player.createQueue(message.guild.id);
-        queue.setData({ initMessage: message });
+        const queue = interaction.client.player.createQueue(interaction.guild.id);
+        queue.setData({ initMessage: interaction });
         queue.join(voice.channel).then(() => {
             Utils.best(searchTerm, { timecode: true }, queue).then(song => {
-                if (client.isSongInForbiddenSongs(song)) {
+                if (interaction.client.isSongInForbiddenSongs(song)) {
                     console.log("Song is in forbidden songs.");
-                    message.channel.send("This song is not allowed.");
+                    interaction.editReply("Dieser Song ist nicht erlaubt.");
                     return;
                 }
 
                 queue.play(song.url, { timecode: true });
-
+                interaction.editReply("Song hinzugefügt.");
+                console.log("Song added.");
             }).catch(err => console.log(`Error at play 1: ${err}`));
         }).catch(err => {
             if (!guildAudioQueue)

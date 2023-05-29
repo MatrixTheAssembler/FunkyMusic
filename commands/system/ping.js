@@ -1,11 +1,11 @@
-const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
-    name: "ping",
-    help: `${directory}/ping`,
-    description: "returns pong",
-    execute(client, message, args){
-        message.channel.send("pong");
-        console.log("pong");
-    }
-}
+    data: new SlashCommandBuilder()
+        .setName('ping')
+        .setDescription("Antwortet mit 'Pong!'"),
+
+    async execute(interaction) {
+        await interaction.reply('Pong!');
+    },
+};

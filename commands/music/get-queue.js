@@ -1,33 +1,23 @@
-const directory = __dirname.slice(__dirname.lastIndexOf('/')+1);
+const { SlashCommandBuilder } = require("discord.js");
+
 
 module.exports = {
-    name: "getq",
-    help: `${directory}/getq`,
-    description: "Lists audio in queue.",
-    aliases: ["list"],
-    execute(client, message, args) {
-        const { voice } = message.member;
-        const guildAudioQueue = client.player.getQueue(message.guild.id);
+    data: new SlashCommandBuilder()
+        .setName("get-queue")
+        .setDescription("Zeigt die Warteschlange an."),
 
-        const guildRoles = message.guild.roles.cache;
-        const memberRoles = message.member._roles;
-        const guildMemberRoles = guildRoles
-            .filter(role => memberRoles.includes(role.id))
-            .map(role => role.name.toLowerCase());
-        if (!guildMemberRoles.includes("dj")) {
-            message.channel.send("You need the DJ role to manipulate music.");
-            console.log("Not DJ role.");
-            return;
-        }
+    async execute(interaction) {
+        const { voice } = interaction.member;
+        const guildAudioQueue = interaction.client.player.getQueue(interaction.guild.id);
 
         if (!voice.channel) {
-            message.channel.send("You must be in a voice channel.");
-            console.log("You must be in a voice channel.");
+            interaction.reply("Du musst in einem Sprachkanal sein.", { ephemeral: true });
+            console.log("Not in voice channel.");
             return;
         }
 
-        if(!guildAudioQueue || guildAudioQueue.songs.length <= 1){
-            message.channel.send("No song in Queue.");
+        if (!guildAudioQueue || !guildAudioQueue.songs.length || guildAudioQueue.songs.length <= 1) {
+            interaction.reply("Kein Song in der Warteschlange.");
             console.log("No song in Queue.");
             return;
         }
@@ -37,13 +27,13 @@ module.exports = {
             newMessage += i + ": " + guildAudioQueue.songs[i] + "\n";
 
             if(newMessage.length > 1500){
-                message.channel.send(newMessage);
+                interaction.reply(newMessage);
                 newMessage = "";
             }
         }
 
         if(newMessage.length > 0){
-            message.channel.send(newMessage);
+            interaction.reply(newMessage);
         }
 
         console.log("Get Queue " + guildAudioQueue.songs.length);

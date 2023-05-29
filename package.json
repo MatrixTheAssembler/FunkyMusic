@@ -1,7 +1,7 @@
 {
   "name": "funky-music",
-  "version": "1.0.0",
-  "description": "A discord bot.",
+  "version": "2.0.0",
+  "description": "A discord bot to play music from YouTube and Spotify.",
   "main": "main.js",
   "scripts": {
     "start": "node main.js",
@@ -13,18 +13,16 @@
   "author": "MatrixTheAssembler",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/opus": "^0.8.0",
-    "@discordjs/voice": "^0.8.0",
-    "discord-music-player": "^9.0.2",
-    "discord.js": "^13.6.0",
-    "dotenv": "^8.2.0",
-    "i": "^0.3.7",
-    "libsodium-wrappers": "^0.7.9",
-    "node": "^15.8.0",
-    "node-fetch": "^2.6.1",
-    "npm": "^8.3.2",
-    "opusscript": "0.0.7",
-    "ws": "^7.5.1",
+    "@discordjs/opus": "^0.9.0",
+    "@discordjs/voice": "^0.15.0",
+    "discord-music-player": "^9.1.1",
+    "discord.js": "^14.8.0",
+    "dotenv": "^16.0.3",
+    "ffmpeg": "^0.0.4",
+    "isomorphic-unfetch": "^4.0.2",
+    "libsodium-wrappers": "^0.7.11",
+    "node-fetch": "^2.6.9",
+    "opusscript": "^0.0.8",
     "ytdl-core": "^4.11.2"
   }
 }
