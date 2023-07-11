@@ -20,7 +20,7 @@ module.exports = {
             return;
         }
 
-        if(!song){
+        if (!song) {
             if (!guildAudioQueue || !guildAudioQueue.songs.length) {
                 interaction.reply("Kein Song in der Warteschlange.");
                 console.log("No song in Queue.");
@@ -38,7 +38,7 @@ module.exports = {
         let searchTerm = song;
         searchTerm = searchTerm.replace("music.youtube.com", "youtube.com");
 
-        if(searchTerm.includes("spotify")){
+        if (searchTerm.includes("spotify")) {
             searchTerm = searchTerm.replace("open.", "");
         }
 
@@ -46,22 +46,27 @@ module.exports = {
 
         const queue = interaction.client.player.createQueue(interaction.guild.id);
         queue.setData({ initMessage: interaction });
-        queue.join(voice.channel).then(() => {
-            Utils.best(searchTerm, { timecode: true }, queue).then(song => {
-                if (interaction.client.isSongInForbiddenSongs(song)) {
-                    console.log("Song is in forbidden songs.");
-                    interaction.editReply("Dieser Song ist nicht erlaubt.");
-                    return;
-                }
 
+        Utils.best(searchTerm, { timecode: true }, queue).then(song => {
+            if (interaction.client.isSongInForbiddenSongs(song)) {
+                console.log("Song is in forbidden songs.");
+                interaction.editReply("Dieser Song ist nicht erlaubt.");
+                return;
+            }
+
+            queue.join(voice.channel).then(() => {
                 queue.play(song.url, { timecode: true });
                 interaction.editReply("Song hinzugefügt.");
                 console.log("Song added.");
-            }).catch(err => console.log(`Error at play 1: ${err}`));
+            }).catch(err => {
+                if (!guildAudioQueue)
+                    queue.stop();
+                interaction.editReply("Fehler beim Abspielen.");
+                console.log("Error at play 2:\n" + err);
+            });
         }).catch(err => {
-            if (!guildAudioQueue)
-                queue.stop();
-            console.log("Error at play 2:\n" + err);
+            interaction.editReply("Fehler beim Abspielen.");
+            console.log("Error at play 1:\n" + err);
         });
     }
 }
